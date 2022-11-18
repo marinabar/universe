@@ -1,4 +1,7 @@
 import pygame, random
+import pygame_widgets
+from pygame_widgets.slider import Slider
+from pygame_widgets.textbox import TextBox
 from pygame.locals import *
 import pygame.freetype
 
@@ -32,7 +35,6 @@ pygame.mixer.init()
 pygame.mixer.music.load("space.ogg")
 pygame.mixer.music.play()
 
-
 #init font
 font = pygame.freetype.SysFont('Times New Roman', 30)
 
@@ -46,18 +48,26 @@ grey = pygame.Rect(posmain)
 button_random = pygame.Rect(posmain[0] + 30, posmain[1] + 300, 90, 50)
 button_cree = pygame.Rect(posmain[0] + 60 + 90, posmain[1] + 300, 90, 50)
 
+#sliders
+slider = Slider(displaysurf, 100, 100, 800, 40, min=1, max=10, step=1)
+label = TextBox(displaysurf, posmain[0, 200, 50, 50, fontSize=30)
+
+
 # main loop
 run = True
 while run:
     displaysurf.blit(starbackground, (0, 0))
 
-    mouse = pygame.mouse.get_pos()
     pygame.draw.rect(displaysurf, couleur_rect, grey,
                      border_radius=5)  # draw rectangle containing buttons
     pygame.draw.rect(displaysurf, [65, 63, 70], button_random,
                      border_radius=5)  #draw randomizer button
     pygame.draw.rect(displaysurf, [65, 63, 70], button_cree,
                      border_radius=5)  #draw create button
+  
+    output.setText(slider.getValue())
+
+    pygame_widgets.update(pygame.event.get())
 
     for event in pygame.event.get():
         #check if quit event
