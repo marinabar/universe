@@ -2,6 +2,7 @@ import pygame, random
 import pygame_widgets
 from pygame_widgets.slider import Slider
 from pygame_widgets.textbox import TextBox
+from pygame_widgets.dropdown import Dropdown, DropdownChoice
 from pygame.locals import *
 import pygame.freetype
 
@@ -51,27 +52,28 @@ button_cree = pygame.Rect(posmain[0] + 60 + 90, posmain[1] + 320, 90, 30)
 #sliders - il faut en faire 8 - site python-widgets
 bgcolor = (65, 63, 70)
 tcolor = couleur_rect
+slidercolor=(200,200,200)
 
 slidertaille = Slider(displaysurf,
-                      posmain[0] + 30,
-                      posmain[1] + 25 + 18 * 1 + 15 * 1,
-                      posmain[2] // 2,
-                      40,
+                      posmain[0] + 100,
+                      posmain[1] + 9 + 18 * 1 + 15 * 1+20,
+                      width=130,
+                      height=5,
                       min=1,
                       max=10,
-                      step=1)
+                      step=1, curved=False)
 label_slider_taille = TextBox(displaysurf,
-                              posmain[0] + 30,
-                              posmain[1] + 30,
-                              10,
-                              10,
-                              fontSize=10,
-                              borderThickness=1)
+                              posmain[0] + 100+140, #width slider,
+                              posmain[1]+23 + 18 * 1 + 15 * 1+20,
+                              0,
+                              0,
+                              fontSize=18,
+                              borderThickness=0)
 label_slider_taille.disable()
 labeltaille = TextBox(
     displaysurf,
-    posmain[0] + 20,
-    posmain[1] + 25 + 18 * 1 + 15 * 1,
+    posmain[0] + 30,
+    posmain[1] + 25 + 18 * 1 + 15 * 1+20,
     #position du rectangle gris + décalage + taille texte + taille padding
     0,
     0,
@@ -92,74 +94,83 @@ labeluniv.disable()
 labeluniv.setText("Crée ton univers !")
 
 slidermasse = Slider(displaysurf,
-                     100,
-                     100,
-                     800,
-                     40,
+                     posmain[0] + 100,
+                     posmain[1] + 9 + 18 * 2 + 15 * 2+32,
+                     width=130,
+                     height=5,
                      min=1,
                      max=10,
                      step=1,
                      curved=False)
+labelslidermasse=TextBox(displaysurf,
+                              posmain[0] + 100+140, #width slider,
+                              posmain[1]+23 + 18 * 2 + 15 * 2+32,
+                              0,
+                              0,
+                              fontSize=18,
+                              borderThickness=0)
+labelslidermasse.disable()
 labelmasse = TextBox(displaysurf,
                      posmain[0] + 30,
-                     200,
-                     50,
-                     50,
-                     fontSize=30,
-                     radius=10,
+                     posmain[1] + 25 + 18 * 2 + 15 * 2+32,
+                     0,
+                     0,
+                     fontSize=23,
                      borderThickness=0)
 labelmasse.disable()
 labelmasse.setText("Masse : ")
 
 tempinput = TextBox(displaysurf,
-                    posmain[0] + 30,
-                    200,
-                    50,
-                    50,
-                    fontSize=30,
-                    radius=10,
-                    borderThickness=0)
+                    posmain[0] + 140,
+                    posmain[1] +18 * 3 + 15 * 3+44,
+                    90,
+                    18,
+                    fontSize=15,
+                    borderThickness=1)
 templabel = TextBox(displaysurf,
                     posmain[0] + 30,
-                    200,
-                    50,
-                    50,
-                    fontSize=30,
-                    radius=10,
+                    posmain[1] + 25 + 18 * 3 + 15 * 3+44,
+                    0,
+                    0,
+                    fontSize=23,
                     borderThickness=0)
 templabel.disable()
 templabel.setText("Température : ")
 
 typelabel = TextBox(displaysurf,
                     posmain[0] + 30,
-                    200,
-                    50,
-                    50,
-                    fontSize=30,
-                    radius=10,
+                    posmain[1] + 25 + 18 * 4 + 15 * 4+58,
+                    0,
+                    0,
+                    fontSize=23,
                     borderThickness=0)
 typelabel.disable()
 typelabel.setText("Type : ")
-typeinput = TextBox(displaysurf,
-                    posmain[0] + 30,
-                    200,
-                    50,
-                    50,
-                    fontSize=30,
-                    radius=10)  #séléction de type
+typedropdown = Dropdown(displaysurf, 
+                    posmain[0] + 100,
+                    posmain[1]  + 18 * 4 + 15 * 4+58,
+                    width=133,
+                    height=18,name="Quel type ?",choices=["Gazeuse", "Tellurique"],
+                    fontSize=23, values=[0,1], textHalign='left',pressedColour=(255,255,255), inactiveColour=slidercolor, textColour=bgcolor)  #séléction de type
 
-slidernbplant = Slider(displaysurf, 100, 100, 800, 40, min=1, max=10, step=1)
+slidernbplant = Slider(displaysurf, posmain[0] + 38, posmain[1] + 75 + 18 *6 + 15 * 6, height=5, width=200, min=1, max=8, step=1, curved=False)
 labelnbplant = TextBox(displaysurf,
-                       posmain[0] + 30,
-                       200,
-                       50,
-                       50,
-                       fontSize=30,
-                       radius=10,
-                       borderThickness=0,
-                       textColour=bgcolor)
+                       posmain[0] + 38,
+                       posmain[1] + 72 + 18 *5 + 15 * 5,
+                       width = 200,
+                       height=23,
+                       fontSize=20,
+                       borderThickness=1, coulour=couleur_rect)
 labelnbplant.disable()
-labelnbplant.setText("Nombre de planètes : ")
+labelnbplant.setText("       Nombre de planètes : ")
+labelslidernb=TextBox(displaysurf,
+                              posmain[0] + 100+140, #width slider,
+                              posmain[1] + 18 *6 + 15 * 6+90,
+                              0,
+                              0,
+                              fontSize=18,
+                              borderThickness=0)
+labelslidernb.disable()
 
 aleatoire = TextBox(displaysurf,
                     posmain[0] + 28,
@@ -183,6 +194,11 @@ cree = TextBox(displaysurf,
 cree.disable()
 cree.setText("Crée")
 
+
+def valdropdown():
+  print(typedropdown.getSelected())
+
+
 # main loop
 run = True
 while run:
@@ -195,10 +211,9 @@ while run:
                      border_radius=5)  #draw randomizer button
     pygame.draw.rect(displaysurf, [65, 63, 70], button_cree,
                      border_radius=5)  #draw create button
-
     label_slider_taille.setText(slidertaille.getValue())
-    labelmasse.setText(slidermasse.getValue())
-    labelnbplant.setText(slidernbplant.getValue())
+    labelslidermasse.setText(slidermasse.getValue())
+    labelslidernb.setText(slidernbplant.getValue())
 
     for event in events:
         #check if quit event
@@ -209,6 +224,8 @@ while run:
             # checks if mouse position is over the button
             if button_cree.collidepoint(mouse_pos):
                 # prints current location of mouse
+              
+                valdropdown()
                 print('CREATE was pressed at {0}'.format(mouse_pos))
             if button_random.collidepoint(mouse_pos):
                 # prints current location of mouse
