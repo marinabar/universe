@@ -50,7 +50,7 @@ class animatedCircle:
 
 
 # load images
-starbackground = pygame.image.load("night.jpg")
+starbackground = pygame.image.load("univers/night.jpg")
 starbackground = pygame.transform.scale(starbackground,
                                         (LARGEUR_ECRAN, HAUTEUR_ECRAN))
 
@@ -62,18 +62,25 @@ displaysurf = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN))
 #init font
 font = pygame.freetype.SysFont('Times New Roman', 30)
 
-delay = 20
+# couleurs et paramètres de planètes
 blue = (0, 0, 255)
+red =(255, 0, 0)
+centre=((LARGEUR_ECRAN *3/4)/2-25, 360)
 animation = True
 
-planet = animatedCircle((540, 360), 310, displaysurf, blue, 20)
+# liste des planètes
+
+planet1=animatedCircle(centre,100, displaysurf, red, 15)
+planet = animatedCircle(centre, 310, displaysurf, blue, 20) # A CHANGER
+listeplan=[planet1, planet]
 
 #buttons
 couleur_rect = [230, 219, 255]
 posmain = [
-    LARGEUR_ECRAN - LARGEUR_ECRAN // 4 - 50, 30, LARGEUR_ECRAN // 4,
+    LARGEUR_ECRAN - LARGEUR_ECRAN // 4 - 50, 120, LARGEUR_ECRAN // 4,
     HAUTEUR_ECRAN * 0.6 - 60
-]  #coordinates main rectangle
+]  
+#coordinates main rectangle
 grey = pygame.Rect(posmain)
 button_random = pygame.Rect(posmain[0] + 30, posmain[1] + 320, 90, 30)
 button_cree = pygame.Rect(posmain[0] + 60 + 90, posmain[1] + 320, 90, 30)
@@ -251,13 +258,13 @@ def create():
     print(f"masse : {slidermasse.getValue()}")
     print(f'type sélectionné {typedropdown.getSelected()}')
 
+
 def rdm():
     print(f"température : {random.randint(1,10)}")
     print(f"taille : {random.randint(1,10)}")
     print(f"nombre de planètes : {slidernbplant.getValue()}")
     print(f"masse : {random.randint(1,10)}")
     print(f'type sélectionné {random.randint(0,2)}')
-
 
 
 # main loop
@@ -294,16 +301,16 @@ while run:
                 print('CREATE was pressed at {0}'.format(mouse_pos))
             if button_random.collidepoint(mouse_pos):
                 # prints current location of mouse
-              rdm()
-              print('RANDOM was pressed at {0}'.format(mouse_pos))
+                rdm()
+                print('RANDOM was pressed at {0}'.format(mouse_pos))
 
     if animation:
-        planet.incremente_degree(1)
+        for i in range(len(listeplan)):
+            listeplan[i].incremente_degree(0.5*(i+1))
 
-    planet.affiche()
+    for i in listeplan:
+        i.affiche()
 
-    pygame.display.flip()
-    pygame.time.delay(delay)
 
     pygame_widgets.update(events)
     pygame.display.update()
