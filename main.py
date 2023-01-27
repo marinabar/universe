@@ -1,3 +1,5 @@
+# on importe les bibliothèques nécessaires
+
 import pygame, random, math
 import pygame_widgets
 from pygame_widgets.slider import Slider
@@ -5,11 +7,11 @@ from pygame_widgets.textbox import TextBox
 from pygame_widgets.dropdown import Dropdown, DropdownChoice
 import pygame.freetype
 
-#defining screen parameters
+#taille de la fenêtre
 LARGEUR_ECRAN = 1080
 HAUTEUR_ECRAN = 720
 
-
+# classe pour créer la planète animée
 class animatedCircle:
     def __init__(self,
                  center: tuple,
@@ -49,18 +51,16 @@ class animatedCircle:
                             self.animationDegree), self.size, self.width)
 
 
-# load images
-starbackground = pygame.image.load("univers/night.jpg")
+# création d'un fond d'écran avec une image
+starbackground = pygame.image.load("night.jpg")
 starbackground = pygame.transform.scale(starbackground,
                                         (LARGEUR_ECRAN, HAUTEUR_ECRAN))
 
-# start pygame
+# initialisation de pygame
 pygame.init()
-pygame.display.set_caption('Universe')
+pygame.display.set_caption('Universe') # nom de la fenêtre
 displaysurf = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN))
 
-#init font
-font = pygame.freetype.SysFont('Times New Roman', 30)
 
 # couleurs et paramètres de planètes
 blue = (0, 0, 255)
@@ -74,22 +74,24 @@ planet1=animatedCircle(centre,100, displaysurf, red, 15)
 planet = animatedCircle(centre, 310, displaysurf, blue, 20) # A CHANGER
 listeplan=[planet1, planet]
 
-#buttons
+# rectangle principal contenant la palette de création
 couleur_rect = [230, 219, 255]
 posmain = [
     LARGEUR_ECRAN - LARGEUR_ECRAN // 4 - 50, 120, LARGEUR_ECRAN // 4,
     HAUTEUR_ECRAN * 0.6 - 60
-]  
-#coordinates main rectangle
+]  #coordonnées 
+
+#création des rectangles servant de fond aux boutons random et crée
 grey = pygame.Rect(posmain)
 button_random = pygame.Rect(posmain[0] + 30, posmain[1] + 320, 90, 30)
 button_cree = pygame.Rect(posmain[0] + 60 + 90, posmain[1] + 320, 90, 30)
 
-#sliders - il faut en faire 8 - site python-widgets
-bgcolor = (65, 63, 70)
-tcolor = couleur_rect
-slidercolor = (200, 200, 200)
+#palette de couleurs
+bgcolor = (65, 63, 70) #couleur foncée
+tcolor = couleur_rect #couleur du text
+slidercolor = (200, 200, 200) # couleur des sliders
 
+# définition de tous les éléments en utilisant la bibliothèque pygame-widgets
 slidertaille = Slider(displaysurf,
                       posmain[0] + 100,
                       posmain[1] + 9 + 18 * 1 + 15 * 1 + 20,
@@ -101,13 +103,13 @@ slidertaille = Slider(displaysurf,
                       curved=False)
 label_slider_taille = TextBox(
     displaysurf,
-    posmain[0] + 100 + 140,  #width slider,
+    posmain[0] + 100 + 140,  #largeur slider,
     posmain[1] + 23 + 18 * 1 + 15 * 1 + 20,
     0,
     0,
     fontSize=18,
     borderThickness=0)
-label_slider_taille.disable()
+label_slider_taille.disable() # on le définit comme texte constant
 labeltaille = TextBox(
     displaysurf,
     posmain[0] + 30,
