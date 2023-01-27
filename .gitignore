@@ -1,0 +1,5 @@
+*.lock
+*.replit
+*.breakpoints
+replit.*
+*.toml
