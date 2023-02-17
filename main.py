@@ -65,16 +65,16 @@ displaysurf = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN))
 # couleurs et paramètres de planètes
 blue = (0, 0, 255)
 red =(255, 0, 0)
-centre=((LARGEUR_ECRAN *3/4)/2-25, 360)
+MAX = 320 # distance maximale entre le centre du système solaire et la planète
+CENTRE=((LARGEUR_ECRAN *3/4)/2-25, 360)
 animation = True
 
 # liste des planètes
-
-planet1=animatedCircle(centre,100, displaysurf, red, 15)
-planet = animatedCircle(centre, 310, displaysurf, blue, 20) # A CHANGER
+planet1=animatedCircle(CENTRE,100, displaysurf, red, 15)
+planet = animatedCircle(CENTRE, 320, displaysurf, blue, 25) # A CHANGER
 listeplan=[planet1, planet]
 
-# rectangle principal contenant la palette de création
+# rectangle principal contenant la palette de commande
 couleur_rect = [230, 219, 255]
 posmain = [
     LARGEUR_ECRAN - LARGEUR_ECRAN // 4 - 50, 120, LARGEUR_ECRAN // 4,
@@ -109,7 +109,7 @@ label_slider_taille = TextBox(
     0,
     fontSize=18,
     borderThickness=0)
-label_slider_taille.disable() # on le définit comme texte constant
+label_slider_taille.disable() # on le définit comme texte constant qui ne bouge pas
 labeltaille = TextBox(
     displaysurf,
     posmain[0] + 30,
@@ -252,15 +252,21 @@ cree = TextBox(displaysurf,
 cree.disable()
 cree.setText("Crée")
 
-
+# fonction créer qui prend en entrée tous les états des paramètres visuels et crée une planète
 def create():
-    print(f"température : {tempinput.getText()}")
-    print(f"taille : {slidertaille.getValue()}")
-    print(f"nombre de planètes : {slidernbplant.getValue()}")
-    print(f"masse : {slidermasse.getValue()}")
-    print(f'type sélectionné {typedropdown.getSelected()}')
+  
+  couleur = blue
+  for i in range(slidernbplant.getValue()):
+    distance=MAX/11 * (len(listeplan)+1)
+    planet = animatedCircle(CENTRE, distance, displaysurf, couleur, 15)
+    listeplan.append(planet)
+  print(f"température : {tempinput.getText()}")
+  print(f"taille : {slidertaille.getValue()}")
+  print(f"nombre de planètes : {slidernbplant.getValue()}")
+  print(f"masse : {slidermasse.getValue()}")
+  print(f'type sélectionné {typedropdown.getSelected()}')
 
-
+# génère une planète avec des paramètres aléatoires
 def rdm():
     print(f"température : {random.randint(1,10)}")
     print(f"taille : {random.randint(1,10)}")
@@ -269,46 +275,53 @@ def rdm():
     print(f'type sélectionné {random.randint(0,2)}')
 
 
-# main loop
+# boucle principale
 run = True
 while run:
-    events = pygame.event.get()
-    displaysurf.blit(starbackground, (0, 0))
+    events = pygame.event.get() # on récupère les évènement ayant lieu dans cette itération
+    displaysurf.blit(starbackground, (0, 0)) # fond d'écran
 
     pygame.draw.rect(displaysurf, couleur_rect, grey,
-                     border_radius=5)  # draw rectangle containing buttons
+                     border_radius=5)  # dessine le rectangle contenant les boutons
     pygame.draw.rect(displaysurf, [65, 63, 70], button_random,
-                     border_radius=5)  #draw randomizer button
+                     border_radius=5)  # dessine bouton créer
     pygame.draw.rect(displaysurf, [65, 63, 70], button_cree,
-                     border_radius=5)  #draw create button
-    label_slider_taille.setText(slidertaille.getValue())
+                     border_radius=5)  # dessine bouton aléatoire
+
+    #met à jour les étiquettes des sliders
+    label_slider_taille.setText(slidertaille.getValue()) 
     labelslidermasse.setText(slidermasse.getValue())
     labelslidernb.setText(slidernbplant.getValue())
 
     for event in events:
-        #check if quit event
+        # vérifie si évènement de sortie du programme
         if event.type == pygame.QUIT:
             run = False
+        # pause si la touche espace est appuyée
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                animation = not animation
+              animation = not animation
+            if event.key ==pygame.K_k:
+              listeplan=[]
+            if event.key == pygame.K_p:
+              listeplan.pop()
 
+        # vérifier si boutons aléatoire et créer ont été appuyés
         if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = event.pos  # stores the (x,y) coordinates into the variable as a tuple
-            # checks if mouse position is over the button
+            mouse_pos = event.pos  # enregistre la position de la souris dans un tuple de coordonnées
+            # vérifie si est superposé au bouton crée
             if button_cree.collidepoint(mouse_pos):
-                # prints current location of mouse
-
                 create()
                 print('CREATE was pressed at {0}'.format(mouse_pos))
+              
+            # ou superposé au bouton aléatoire
             if button_random.collidepoint(mouse_pos):
-                # prints current location of mouse
                 rdm()
                 print('RANDOM was pressed at {0}'.format(mouse_pos))
 
-    if animation:
+    if animation: # vérifie que l'animation ne soit pas en pause
         for i in range(len(listeplan)):
-            listeplan[i].incremente_degree(0.5*(i+1))
+            listeplan[i].incremente_degree(0.1*(11-i)) # fait tourner chaque planète
 
     for i in listeplan:
         i.affiche()
