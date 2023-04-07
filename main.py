@@ -17,16 +17,22 @@ class animatedCircle:
                  center: tuple,
                  distanceTo0,
                  display,
-                 color=(255, 255, 255),
                  size=10,
+                 masse=1,
+                 temp=1,
+                 type=1,
                  width=0,
-                 animationDegree=0):
+                 animationDegree=0,
+                 color=(255, 255, 255)):
         self.center = center  # centre de rotation de la sphère, centre de l'orbite
         self.distanceTo0 = distanceTo0  # rayon du cercle correspondant à l'orbite de la sphère
         self.display = display  # surface sur laquelle afficher la sphère
         self.color = color  # couleur de la sphère
-        self.size = size  # rayon de la sphère
-        self.width = width  # épaisseur de la sphère, si =0 sphère pleine
+        self.size = int(size) # rayon de la sphère
+        self.masse = int(masse)
+        self.temp = int(temp)
+        self.type = int(type)
+        self.width = int(width)  # épaisseur de la sphère, si =0 sphère pleine
         self.animationDegree = animationDegree  # mesure de l'angle par rapport à l'axe des abscisses
 
     def coordinate(self, w: tuple, r: int, teta: int):
@@ -48,9 +54,30 @@ class animatedCircle:
         pygame.draw.circle(
             self.display, self.color,
             self.coordinate(self.center, self.distanceTo0,
-                            self.animationDegree), self.size, self.width)
-
-
+                            self.animationDegree), float(self.size), self.width)
+    
+    def setcouleur(self):
+        if self.temp<-50:
+            if self.type==1:
+                self.color = (235,0,0)
+            else:
+                self.color = (254,27,0)
+        if self.temp>=-50 and self.temp<0:
+            if self.type==1:
+                self.color = (252, 220, 18)
+            else:
+                self.color = (255, 255, 107)
+        if self.temp>=0 and self.temp<50:
+            if self.type==1:
+                self.color = (253, 238, 0)
+            else:
+                self.color = (255, 215, 0)
+        if self.temp>=50:
+            if self.type==1:
+                self.color = (15,5,107)
+            else:
+                self.color = (0,51,102)
+            
 # création d'un fond d'écran avec une image
 starbackground = pygame.image.load("night.jpg")
 starbackground = pygame.transform.scale(starbackground,
@@ -70,9 +97,7 @@ CENTRE=((LARGEUR_ECRAN *3/4)/2-25, 360)
 animation = True
 
 # liste des planètes
-planet1=animatedCircle(CENTRE,100, displaysurf, red, 15)
-planet = animatedCircle(CENTRE, 320, displaysurf, blue, 25) # A CHANGER
-listeplan=[planet1, planet]
+listeplan=[]
 
 # rectangle principal contenant la palette de commande
 couleur_rect = [230, 219, 255]
@@ -167,7 +192,7 @@ tempinput = TextBox(displaysurf,
                     90,
                     18,
                     fontSize=15,
-                    borderThickness=1)
+                    borderThickness=1, placeholderText='nombre entre -100 et 100')
 templabel = TextBox(displaysurf,
                     posmain[0] + 30,
                     posmain[1] + 25 + 18 * 3 + 15 * 3 + 44,
@@ -254,17 +279,18 @@ cree.setText("Crée")
 
 # fonction créer qui prend en entrée tous les états des paramètres visuels et crée une planète
 def create():
-  
-  couleur = blue
-  for i in range(slidernbplant.getValue()):
-    distance=MAX/11 * (len(listeplan)+1)
-    planet = animatedCircle(CENTRE, distance, displaysurf, couleur, 15)
-    listeplan.append(planet)
   print(f"température : {tempinput.getText()}")
   print(f"taille : {slidertaille.getValue()}")
   print(f"nombre de planètes : {slidernbplant.getValue()}")
   print(f"masse : {slidermasse.getValue()}")
   print(f'type sélectionné {typedropdown.getSelected()}')
+  for i in range(slidernbplant.getValue()):
+    distance=MAX/11 * (len(listeplan)+1)
+    planet = animatedCircle(CENTRE, distance, displaysurf, slidertaille.getValue()+5, slidermasse.getValue(),
+                            tempinput.getText(), typedropdown.getSelected())
+    planet.setcouleur()
+    if len(listeplan)<11:
+        listeplan.append(planet)
 
 # génère une planète avec des paramètres aléatoires
 def rdm():
@@ -272,7 +298,12 @@ def rdm():
     print(f"taille : {random.randint(1,10)}")
     print(f"nombre de planètes : {slidernbplant.getValue()}")
     print(f"masse : {random.randint(1,10)}")
-    print(f'type sélectionné {random.randint(0,2)}')
+    print(f'type sélectionné {random.randint(0,1)}')
+    distance=MAX/11 * (len(listeplan)+1)
+    planet = animatedCircle(CENTRE, distance, displaysurf, random.randint(1,15), random.randint(1,10),
+                            random.randint(-100,100), random.randint(0,1))
+    planet.setcouleur()
+    listeplan.append(planet)
 
 
 # boucle principale
@@ -321,7 +352,7 @@ while run:
 
     if animation: # vérifie que l'animation ne soit pas en pause
         for i in range(len(listeplan)):
-            listeplan[i].incremente_degree(0.1*(11-i)) # fait tourner chaque planète
+            listeplan[i].incremente_degree(listeplan[i].masse*0.02*(11-i)) # fait tourner chaque planète
 
     for i in listeplan:
         i.affiche()
