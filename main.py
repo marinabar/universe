@@ -11,16 +11,35 @@ import pygame.freetype
 LARGEUR_ECRAN = 1080
 HAUTEUR_ECRAN = 720
 
+#fonction permettant de créer un dégradé de couleur entre start et end avec n couleurs intermédiaires
+def generate_gradient(start_color, end_color, n):
+    r1, g1, b1 = start_color
+    r2, g2, b2 = end_color
+    delta_r = (r2 - r1) / (n - 1)
+    delta_g = (g2 - g1) / (n - 1)
+    delta_b = (b2 - b1) / (n - 1)
+    gradient = [start_color]
+    for i in range(n):
+        r = int(r1 + i * delta_r)
+        g = int(g1 + i * delta_g)
+        b = int(b1 + i * delta_b)
+        gradient.append((r, g, b))
+    return gradient+[end_color]
+
+color_list1 = generate_gradient((255,0,0),(255,255,102),18)
+color_list2 = generate_gradient((255,255,102),(61,118,224),18)
+color_list = color_list1+color_list2[1:-1]
+
 # classe pour créer la planète animée
 class animatedCircle:
     def __init__(self,
                  center: tuple,
                  distanceTo0,
                  display,
-                 size=10,
+                 size=2,
                  masse=1,
-                 temp=1,
                  type=1,
+                 temp=60,
                  width=0,
                  animationDegree=0,
                  color=(255, 255, 255)):
@@ -30,8 +49,16 @@ class animatedCircle:
         self.color = color  # couleur de la sphère
         self.size = int(size) # rayon de la sphère
         self.masse = int(masse)
-        self.temp = int(temp)
-        self.type = int(type)
+        # si température spécifiée
+        if temp:
+            self.temp=int(temp)
+        else:
+            self.temp=60
+        #si type spécifié
+        if type:
+            self.type=int(type)
+        else:
+            self.type=1
         self.width = int(width)  # épaisseur de la sphère, si =0 sphère pleine
         self.animationDegree = animationDegree  # mesure de l'angle par rapport à l'axe des abscisses
 
@@ -57,27 +84,11 @@ class animatedCircle:
                             self.animationDegree), float(self.size), self.width)
     
     def setcouleur(self):
-        if self.temp<-50:
-            if self.type==1:
-                self.color = (235,0,0)
-            else:
-                self.color = (254,27,0)
-        if self.temp>=-50 and self.temp<0:
-            if self.type==1:
-                self.color = (252, 220, 18)
-            else:
-                self.color = (255, 255, 107)
-        if self.temp>=0 and self.temp<50:
-            if self.type==1:
-                self.color = (253, 238, 0)
-            else:
-                self.color = (255, 215, 0)
-        if self.temp>=50:
-            if self.type==1:
-                self.color = (15,5,107)
-            else:
-                self.color = (0,51,102)
-            
+        i = int((self.temp+100)*38/200)
+        print(i)
+        print(self.temp)
+        self.color = color_list[i]
+
 # création d'un fond d'écran avec une image
 starbackground = pygame.image.load("night.jpg")
 starbackground = pygame.transform.scale(starbackground,
@@ -94,6 +105,8 @@ blue = (0, 0, 255)
 red =(255, 0, 0)
 MAX = 320 # distance maximale entre le centre du système solaire et la planète
 CENTRE=((LARGEUR_ECRAN *3/4)/2-25, 360)
+
+# flag mouvement des planètes ou pas
 animation = True
 
 # liste des planètes
@@ -110,13 +123,14 @@ posmain = [
 grey = pygame.Rect(posmain)
 button_random = pygame.Rect(posmain[0] + 30, posmain[1] + 320, 90, 30)
 button_cree = pygame.Rect(posmain[0] + 60 + 90, posmain[1] + 320, 90, 30)
+cadreinfo=pygame.Rect(posmain[0]+20, posmain[1] + 420, posmain[2]-40, 30)
 
 #palette de couleurs
 bgcolor = (65, 63, 70) #couleur foncée
 tcolor = couleur_rect #couleur du text
 slidercolor = (200, 200, 200) # couleur des sliders
 
-# définition de tous les éléments en utilisant la bibliothèque pygame-widgets
+# définition de tous les éléments texte + sliders en utilisant la bibliothèque pygame-widgets
 slidertaille = Slider(displaysurf,
                       posmain[0] + 100,
                       posmain[1] + 9 + 18 * 1 + 15 * 1 + 20,
@@ -125,6 +139,7 @@ slidertaille = Slider(displaysurf,
                       min=1,
                       max=10,
                       step=1,
+                      initial=2,
                       curved=False)
 label_slider_taille = TextBox(
     displaysurf,
@@ -192,7 +207,8 @@ tempinput = TextBox(displaysurf,
                     90,
                     18,
                     fontSize=15,
-                    borderThickness=1, placeholderText='nombre entre -100 et 100')
+                    borderThickness=1, placeholderText='nombre')
+
 templabel = TextBox(displaysurf,
                     posmain[0] + 30,
                     posmain[1] + 25 + 18 * 3 + 15 * 3 + 44,
@@ -234,7 +250,7 @@ slidernbplant = Slider(displaysurf,
                        min=1,
                        max=8,
                        step=1,
-                       curved=False)
+                       curved=False, initial=1)
 labelnbplant = TextBox(displaysurf,
                        posmain[0] + 38,
                        posmain[1] + 72 + 18 * 5 + 15 * 5,
@@ -247,7 +263,7 @@ labelnbplant.disable()
 labelnbplant.setText("       Nombre de planètes : ")
 labelslidernb = TextBox(
     displaysurf,
-    posmain[0] + 100 + 140,  #width slider,
+    posmain[0] + 100 + 140, 
     posmain[1] + 18 * 6 + 15 * 6 + 90,
     0,
     0,
@@ -255,6 +271,7 @@ labelslidernb = TextBox(
     borderThickness=0)
 labelslidernb.disable()
 
+#texte "aléatoire"
 aleatoire = TextBox(displaysurf,
                     posmain[0] + 28,
                     posmain[1] + 353,
@@ -266,6 +283,7 @@ aleatoire = TextBox(displaysurf,
 aleatoire.disable()
 aleatoire.setText("Aléatoire")
 
+#texte "créer"
 cree = TextBox(displaysurf,
                posmain[0] + 65 + 100,
                posmain[1] + 353,
@@ -275,7 +293,20 @@ cree = TextBox(displaysurf,
                borderThickness=0,
                textColour=tcolor)
 cree.disable()
-cree.setText("Crée")
+cree.setText("Créer")
+
+# cadre avec les informations
+info = TextBox(displaysurf,
+               posmain[0] + 15,
+               posmain[1] + 450,
+               0,
+               0,
+               fontSize=17,
+               borderThickness=0,
+               textColour=tcolor)
+info.disable()
+info.setText("Faire K pour détruire l'univers et P pour annihiler une planète")
+
 
 # fonction créer qui prend en entrée tous les états des paramètres visuels et crée une planète
 def create():
@@ -294,23 +325,31 @@ def create():
 
 # génère une planète avec des paramètres aléatoires
 def rdm():
-    print(f"température : {random.randint(1,10)}")
+    print(f"température : {random.randint(-130,130)}")
     print(f"taille : {random.randint(1,10)}")
     print(f"nombre de planètes : {slidernbplant.getValue()}")
     print(f"masse : {random.randint(1,10)}")
     print(f'type sélectionné {random.randint(0,1)}')
     distance=MAX/11 * (len(listeplan)+1)
     planet = animatedCircle(CENTRE, distance, displaysurf, random.randint(1,15), random.randint(1,10),
-                            random.randint(-100,100), random.randint(0,1))
+                            random.randint(0,1), random.randint(-100,100))
     planet.setcouleur()
-    listeplan.append(planet)
+    if len(listeplan)<11:
+        listeplan.append(planet)
 
+#compteur
+i=0
+
+#texte d'information
+notice = "Faire K pour détruire l'univers et P pour annihiler une planète"
 
 # boucle principale
 run = True
 while run:
     events = pygame.event.get() # on récupère les évènement ayant lieu dans cette itération
     displaysurf.blit(starbackground, (0, 0)) # fond d'écran
+    
+    displaysurf.blit(self.font.render(notice, True, darkgrey), (200, 100))
 
     pygame.draw.rect(displaysurf, couleur_rect, grey,
                      border_radius=5)  # dessine le rectangle contenant les boutons
@@ -318,6 +357,9 @@ while run:
                      border_radius=5)  # dessine bouton créer
     pygame.draw.rect(displaysurf, [65, 63, 70], button_cree,
                      border_radius=5)  # dessine bouton aléatoire
+    pygame.draw.rect(displaysurf, slidercolor, cadreinfo,
+                     border_radius=0)  # dessine cadre avec informations
+
 
     #met à jour les étiquettes des sliders
     label_slider_taille.setText(slidertaille.getValue()) 
@@ -334,7 +376,7 @@ while run:
               animation = not animation
             if event.key ==pygame.K_k:
               listeplan=[]
-            if event.key == pygame.K_p:
+            if event.key == pygame.K_p and len(listeplan)!=0:
               listeplan.pop()
 
         # vérifier si boutons aléatoire et créer ont été appuyés
@@ -354,6 +396,7 @@ while run:
         for i in range(len(listeplan)):
             listeplan[i].incremente_degree(listeplan[i].masse*0.02*(11-i)) # fait tourner chaque planète
 
+    #on affiche chaque planète
     for i in listeplan:
         i.affiche()
 
