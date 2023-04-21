@@ -1,5 +1,6 @@
 # on importe les bibliothèques nécessaires
 
+from cgitb import text
 import pygame, random, math
 import pygame_widgets
 from pygame_widgets.slider import Slider
@@ -98,13 +99,13 @@ starbackground = pygame.transform.scale(starbackground,
 pygame.init()
 pygame.display.set_caption('Universe') # nom de la fenêtre
 displaysurf = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN))
+font = pygame.font.Font(None, 13)
 
 
-# couleurs et paramètres de planètes
-blue = (0, 0, 255)
-red =(255, 0, 0)
+# paramètres de planètes
 MAX = 320 # distance maximale entre le centre du système solaire et la planète
 CENTRE=((LARGEUR_ECRAN *3/4)/2-25, 360)
+NBPLANMAX=11
 
 # flag mouvement des planètes ou pas
 animation = True
@@ -123,12 +124,13 @@ posmain = [
 grey = pygame.Rect(posmain)
 button_random = pygame.Rect(posmain[0] + 30, posmain[1] + 320, 90, 30)
 button_cree = pygame.Rect(posmain[0] + 60 + 90, posmain[1] + 320, 90, 30)
-cadreinfo=pygame.Rect(posmain[0]+20, posmain[1] + 420, posmain[2]-40, 30)
+cadreinfo=pygame.Rect(posmain[0]+20, posmain[1] + 420, posmain[2]-40, 20)
 
 #palette de couleurs
 bgcolor = (65, 63, 70) #couleur foncée
 tcolor = couleur_rect #couleur du text
 slidercolor = (200, 200, 200) # couleur des sliders
+darkgrey=(104,104,104)
 
 # définition de tous les éléments texte + sliders en utilisant la bibliothèque pygame-widgets
 slidertaille = Slider(displaysurf,
@@ -285,7 +287,7 @@ aleatoire.setText("Aléatoire")
 
 #texte "créer"
 cree = TextBox(displaysurf,
-               posmain[0] + 65 + 100,
+               posmain[0] + 65 + 97,
                posmain[1] + 353,
                0,
                0,
@@ -295,17 +297,6 @@ cree = TextBox(displaysurf,
 cree.disable()
 cree.setText("Créer")
 
-# cadre avec les informations
-info = TextBox(displaysurf,
-               posmain[0] + 15,
-               posmain[1] + 450,
-               0,
-               0,
-               fontSize=17,
-               borderThickness=0,
-               textColour=tcolor)
-info.disable()
-info.setText("Faire K pour détruire l'univers et P pour annihiler une planète")
 
 
 # fonction créer qui prend en entrée tous les états des paramètres visuels et crée une planète
@@ -320,7 +311,7 @@ def create():
     planet = animatedCircle(CENTRE, distance, displaysurf, slidertaille.getValue()+5, slidermasse.getValue(),
                             tempinput.getText(), typedropdown.getSelected())
     planet.setcouleur()
-    if len(listeplan)<11:
+    if len(listeplan)<NBPLANMAX:
         listeplan.append(planet)
 
 # génère une planète avec des paramètres aléatoires
@@ -339,6 +330,7 @@ def rdm():
 
 #compteur
 i=0
+transparence=255
 
 #texte d'information
 notice = "Faire K pour détruire l'univers et P pour annihiler une planète"
@@ -349,17 +341,29 @@ while run:
     events = pygame.event.get() # on récupère les évènement ayant lieu dans cette itération
     displaysurf.blit(starbackground, (0, 0)) # fond d'écran
     
-    displaysurf.blit(self.font.render(notice, True, darkgrey), (200, 100))
 
     pygame.draw.rect(displaysurf, couleur_rect, grey,
                      border_radius=5)  # dessine le rectangle contenant les boutons
-    pygame.draw.rect(displaysurf, [65, 63, 70], button_random,
-                     border_radius=5)  # dessine bouton créer
-    pygame.draw.rect(displaysurf, [65, 63, 70], button_cree,
-                     border_radius=5)  # dessine bouton aléatoire
-    pygame.draw.rect(displaysurf, slidercolor, cadreinfo,
-                     border_radius=0)  # dessine cadre avec informations
 
+    # vérifie si le nombre de planètes max n'est pas atteint
+    if len(listeplan)==NBPLANMAX:
+        couleur_bouton=(120,120,120)
+    else:
+        couleur_bouton=[65, 63, 70]
+    
+    pygame.draw.rect(displaysurf, couleur_bouton, button_cree,
+                     border_radius=5)  # dessine bouton aléatoire
+    
+    pygame.draw.rect(displaysurf, couleur_bouton, button_random,
+                     border_radius=5)  # dessine bouton random
+
+    #texte du cadre avec les info
+    transparence-=0.25
+    if transparence>=0:
+        pygame.draw.rect(displaysurf, (104,104,104, transparence), cadreinfo, border_radius=0)  # dessine cadre avec informations
+        text_surf = font.render(notice, True, (200,200,200))
+        text_surf.set_alpha(transparence)
+        displaysurf.blit(text_surf, (posmain[0] + 22 , posmain[1] + 425))
 
     #met à jour les étiquettes des sliders
     label_slider_taille.setText(slidertaille.getValue()) 
