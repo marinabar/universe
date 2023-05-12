@@ -1,6 +1,5 @@
 # on importe les bibliothèques nécessaires
 
-from cgitb import text
 import pygame, random, math
 import pygame_widgets
 from pygame_widgets.slider import Slider
@@ -50,15 +49,20 @@ class animatedCircle:
         self.color = color  # couleur de la sphère
         self.size = int(size) # rayon de la sphère
         self.masse = int(masse)
-        # si température spécifiée
-        if temp:
-            self.temp=int(temp)
+        # si la température est spécifiée
+        if temp != None and temp!="":
+            temp=int(temp)
+            if temp<-100:
+                temp=-100
+            if temp>100:
+                temp=100
+            self.temp=int(temp) 
         else:
             self.temp=60
         #si type spécifié
-        if type:
+        if type != None:
             self.type=int(type)
-        else:
+        elif type is None:
             self.type=1
         self.width = int(width)  # épaisseur de la sphère, si =0 sphère pleine
         self.animationDegree = animationDegree  # mesure de l'angle par rapport à l'axe des abscisses
@@ -84,10 +88,11 @@ class animatedCircle:
             self.coordinate(self.center, self.distanceTo0,
                             self.animationDegree), float(self.size), self.width)
     
+    # définit la couleur proportionnellement à la température
     def setcouleur(self):
-        i = int((self.temp+100)*38/200)
-        print(i)
-        print(self.temp)
+        i = int((self.temp+100)*37/200)
+        if self.type ==1 and i <=36:
+            i+=1
         self.color = color_list[i]
 
 # création d'un fond d'écran avec une image
@@ -306,11 +311,18 @@ def create():
   print(f"nombre de planètes : {slidernbplant.getValue()}")
   print(f"masse : {slidermasse.getValue()}")
   print(f'type sélectionné {typedropdown.getSelected()}')
+  # répéter la création de planètes autant de fois que spécifié
   for i in range(slidernbplant.getValue()):
     distance=MAX/11 * (len(listeplan)+1)
-    planet = animatedCircle(CENTRE, distance, displaysurf, slidertaille.getValue()+5, slidermasse.getValue(),
-                            tempinput.getText(), typedropdown.getSelected())
-    planet.setcouleur()
+    try:
+        planet = animatedCircle(CENTRE, distance, displaysurf, slidertaille.getValue()+5, slidermasse.getValue(),
+                             typedropdown.getSelected(), tempinput.getText())
+        
+        planet.setcouleur()
+    except Exception as e:
+        print("Données d'entrée invalides.")
+        print(f"Erreur : {e}")
+        break
     if len(listeplan)<NBPLANMAX:
         listeplan.append(planet)
 
