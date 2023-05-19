@@ -12,7 +12,7 @@ LARGEUR_ECRAN = 1080
 HAUTEUR_ECRAN = 720
 
 #fonction permettant de créer un dégradé de couleur entre start et end avec n couleurs intermédiaires
-def generate_gradient(start_color, end_color, n):
+def genere_gradient(start_color, end_color, n):
     r1, g1, b1 = start_color
     r2, g2, b2 = end_color
     delta_r = (r2 - r1) / (n - 1)
@@ -26,12 +26,12 @@ def generate_gradient(start_color, end_color, n):
         gradient.append((r, g, b))
     return gradient+[end_color]
 
-color_list1 = generate_gradient((255,0,0),(255,255,102),18)
-color_list2 = generate_gradient((255,255,102),(61,118,224),18)
+color_list1 = genere_gradient((255,0,0),(255,255,102),18)
+color_list2 = genere_gradient((255,255,102),(61,118,224),18)
 color_list = color_list1+color_list2[1:-1]
 
 # classe pour créer la planète animée
-class animatedCircle:
+class DisqueSpatial:
     def __init__(self,
                  center: tuple,
                  distanceTo0,
@@ -305,7 +305,7 @@ cree.setText("Créer")
 
 
 # fonction créer qui prend en entrée tous les états des paramètres visuels et crée une planète
-def create():
+def creer():
   print(f"température : {tempinput.getText()}")
   print(f"taille : {slidertaille.getValue()}")
   print(f"nombre de planètes : {slidernbplant.getValue()}")
@@ -313,9 +313,10 @@ def create():
   print(f'type sélectionné {typedropdown.getSelected()}')
   # répéter la création de planètes autant de fois que spécifié
   for i in range(slidernbplant.getValue()):
+    # calcul distance de la planète au centre
     distance=MAX/11 * (len(listeplan)+1)
     try:
-        planet = animatedCircle(CENTRE, distance, displaysurf, slidertaille.getValue()+5, slidermasse.getValue(),
+        planet = DisqueSpatial(CENTRE, distance, displaysurf, slidertaille.getValue()+5, slidermasse.getValue(),
                              typedropdown.getSelected(), tempinput.getText())
         
         planet.setcouleur()
@@ -333,8 +334,9 @@ def rdm():
     print(f"nombre de planètes : {slidernbplant.getValue()}")
     print(f"masse : {random.randint(1,10)}")
     print(f'type sélectionné {random.randint(0,1)}')
+    # calcul distance de la planète au centre
     distance=MAX/11 * (len(listeplan)+1)
-    planet = animatedCircle(CENTRE, distance, displaysurf, random.randint(1,15), random.randint(1,10),
+    planet = DisqueSpatial(CENTRE, distance, displaysurf, random.randint(1,15), random.randint(1,10),
                             random.randint(0,1), random.randint(-100,100))
     planet.setcouleur()
     if len(listeplan)<11:
@@ -374,7 +376,7 @@ while run:
     if transparence>=0:
         pygame.draw.rect(displaysurf, (104,104,104, transparence), cadreinfo, border_radius=0)  # dessine cadre avec informations
         text_surf = font.render(notice, True, (200,200,200))
-        text_surf.set_alpha(transparence)
+        text_surf.set_alpha(transparence) #modifie niveau de transparence du rectangle
         displaysurf.blit(text_surf, (posmain[0] + 22 , posmain[1] + 425))
 
     #met à jour les étiquettes des sliders
@@ -400,7 +402,7 @@ while run:
             mouse_pos = event.pos  # enregistre la position de la souris dans un tuple de coordonnées
             # vérifie si est superposé au bouton crée
             if button_cree.collidepoint(mouse_pos):
-                create()
+                creer()
               
             # ou superposé au bouton aléatoire
             if button_random.collidepoint(mouse_pos):
