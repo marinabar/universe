@@ -82,7 +82,7 @@ class animatedCircle:
         self.animationDegree = (self.animationDegree + val) % 360
 
     def affiche(self):
-        # fonction qui permet d'afficher avec le modul pygame la sphère
+        # fonction qui permet d'afficher avec le module pygame la sphère
         pygame.draw.circle(
             self.display, self.color,
             self.coordinate(self.center, self.distanceTo0,
@@ -401,12 +401,10 @@ while run:
             # vérifie si est superposé au bouton crée
             if button_cree.collidepoint(mouse_pos):
                 create()
-                print('CREATE was pressed at {0}'.format(mouse_pos))
               
             # ou superposé au bouton aléatoire
             if button_random.collidepoint(mouse_pos):
                 rdm()
-                print('RANDOM was pressed at {0}'.format(mouse_pos))
 
     if animation: # vérifie que l'animation ne soit pas en pause
         for i in range(len(listeplan)):
